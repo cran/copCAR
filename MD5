@@ -1,0 +1,17 @@
+f31868c6cd6954f32c70b985205c31a4 *DESCRIPTION
+979b70174778cdb2ecf7b4df37385d97 *NAMESPACE
+7d6421940f782209762444b40d7bde30 *R/copCAR.R
+dd05005057edee7ef3adf8aa6997b7ee *R/zzz.R
+c0ee59cc957cb55521267e4974b42a5c *inst/CITATION
+2a31fa2c4c1946f8ce8a5e8baa7763c9 *man/adjacency.matrix.Rd
+c3e5d18f9417b1c5c358ec9a1afac70a *man/copCAR.Rd
+55c55621769e2faeb4088e1708a78542 *man/rcopCAR.Rd
+a2cd2810cb4a10c26d3e45815738930f *man/summary.copCAR.Rd
+149aa45ca539e41679217a250c2a3968 *man/vcov.copCAR.Rd
+2a6f9e9e044a78154d3cfda5936d6f48 *src/Makevars
+8d46d69896a1f1d31ed76035a0e49d67 *src/Makevars.win
+d4bd54efd28a7228e46086bd8b4eafe2 *src/buildM.cpp
+69eed3762d3c2fce960dec0726c00548 *src/buildM.h
+9818c606af27189d1b44e6be17c2278a *src/inverse.cpp
+8fef0c93466defe6b081460c679f664f *src/inverse.h
+07240f6859a563b914328012f77ed75f *src/pbivnorm.f

@@ -1,0 +1,30 @@
+useDynLib(copCAR)
+S3method(summary,copCAR)
+S3method(vcov,copCAR)
+export(adjacency.matrix)
+export(copCAR)
+export(rcopCAR)
+import(Rcpp)
+import(numDeriv)
+importClassFrom(spam, 
+		spam, 
+		spam.chol.NgPeyton
+		)
+importMethodsFrom(spam, 
+		diag, 
+		spam, 
+		as.spam,
+		Math,
+		Math2
+		)
+importFrom(spam, 
+		as.spam.matrix, 
+		as.spam.spam, 
+		as.spam.chol.NgPeyton, 
+		diag.of.spam, 
+		diag.spam, 
+		chol.spam, 
+		solve.spam, 
+		update.spam.chol.NgPeyton)
+importFrom(utils, citation)
+importFrom(utils, packageDescription)

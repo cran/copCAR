@@ -1,0 +1,23 @@
+\name{vcov.copCAR}
+\alias{vcov.copCAR}
+\title{Return the covariance matrix of the parameters of a \code{copCAR} model object.}
+\usage{
+\method{vcov}{copCAR}(object, ...)
+}
+\arguments{
+  \item{object}{a fitted \code{copCAR} model object.}
+
+  \item{\dots}{additional arguments.}
+}
+\value{
+An estimate of the covariance matrix of
+\eqn{(\Phi^{-1}(\rho), \beta')'}.
+}
+\description{
+Return the covariance matrix of the parameters of a
+\code{copCAR} model object.
+}
+\seealso{
+\code{\link{copCAR}}
+}
+
