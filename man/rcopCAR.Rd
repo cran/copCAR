@@ -61,14 +61,14 @@ y = rep(0:(m - 1) / (m - 1), each = m)
 X = cbind(x, y)
 
 # Draw Poisson data from copCAR model.
-Z.pois = rcopCAR(rho, beta, X, A, family = poisson(link = "log"))
+Z = rcopCAR(rho, beta, X, A, family = poisson(link = "log"))
 
 # Create a level plot of the simulated data.
 dev.new()
 levelplot(Z ~ x * y, aspect = "iso")
 
 # Draw Bernoulli data from copCAR model.
-Z.ber = rcopCAR(rho, beta, X, A, family = binomial(link = "logit"))
+Z2 = rcopCAR(rho, beta, X, A, family = binomial(link = "logit"))
 
 # Create a level plot of the simulated data.
 dev.new()

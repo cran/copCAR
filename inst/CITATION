@@ -1,6 +1,5 @@
-desc = packageDescription("copCAR")
-year = sub(".*(2[[:digit:]]{3})-.*", "\\1", desc$Date)
-vers = paste("R package version", desc$Version)
+year = sub(".*(2[[:digit:]]{3})-.*", "\\1", meta$Date)
+vers = paste("R package version", meta$Version)
 citHeader("This work was partially supported by a grant from the National Cancer Institute, National Institutes of Health (R03 CA179555).\n\n")
 citEntry(entry = "Manual",
          title = "copCAR: Fitting the copCAR regression model for discrete areal data",
