@@ -28,3 +28,8 @@ importFrom(spam,
 		update.spam.chol.NgPeyton)
 importFrom(utils, citation)
 importFrom(utils, packageDescription)
+importFrom(stats, .getXlevels, dbinom, dpois, glm,
+             model.matrix, model.offset, model.response, optim,
+             pbinom, pnorm, ppois, qbinom, qnorm, qpois,
+             rnorm, runif)
+importFrom(utils, flush.console)

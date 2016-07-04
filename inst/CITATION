@@ -6,10 +6,10 @@ citEntry(entry = "Manual",
          author = personList(as.person("Emily Goren"),
                              as.person("John Hughes")),
          year = year,
-         address = "Minneapolis, MN",
+         address = "Denver, CO",
          note = vers,
          textVersion =
          paste("Emily Goren and John Hughes. (",
                year,
                "). copCAR: Fitting the copCAR regression model for discrete areal data. ",
-               vers, ". Minneapolis, MN.", sep = ""))
+               vers, ". Denver, CO.", sep = ""))
