@@ -23,7 +23,7 @@ using namespace arma;
 //    return Rcpp::wrap(M);
 //'
 
-arma::mat buildMcpp(const mat& B, int k, const colvec& eigval)
+arma::mat buildM_(const mat& B, int k, const colvec& eigval)
 {
     int n = eigval.n_elem;
     mat M = ones<mat>(n, k + 1);
@@ -40,5 +40,5 @@ arma::mat buildMcpp(const mat& B, int k, const colvec& eigval)
 
 RCPP_MODULE(buildM)
 {
-    Rcpp::function("buildMcpp", &buildMcpp);
+    Rcpp::function("buildM_", &buildM_);
 }

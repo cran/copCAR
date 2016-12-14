@@ -63,7 +63,7 @@ build.M = function(A, d, rhoMax, epsilon)                        # compute M use
     lam = eig$values
     Einv = solve(E)
     B = E * t(Einv)
-    result = suppressWarnings(buildM$buildMcpp(B, k, lam))       # call C++ func from buildM Rcpp module.
+    result = buildM$buildM_(B, k, lam)       # call C++ func from buildM Rcpp module.
     return(result)
 }
 
@@ -76,7 +76,7 @@ neighbor.index = function(A)                                     # create index 
         for (j in 1:ncol(A))
         {
             if (A[i, j] == 1 && i < j)
-		index = rbind(index, c(i, j))                    # index (i, j) \in E with i < j.
+		        index = rbind(index, c(i, j))                    # index (i, j) \in E with i < j.
 	  }
     }
     index = index[-1, ]

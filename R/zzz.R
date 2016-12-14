@@ -1,11 +1,8 @@
 
-#.onLoad <- function(libname, pkgname) {
-#    loadRcppModules(direct = FALSE)
-#}
+#' @import Rcpp
 
-loadModule("buildM", TRUE)
-loadModule("inverse", TRUE)
-utils::globalVariables(c("buildM", "inverse"))
+buildM = Module("buildM")
+inverse = Module("inverse")
 
 .onAttach = function(libname, pkgname)
 {

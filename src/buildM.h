@@ -3,6 +3,6 @@
 
 #include <RcppArmadillo.h>
 
-arma::mat buildMcpp(const arma::mat& B, int k, const arma::colvec& eigval);
+arma::mat buildM_(const arma::mat& B, int k, const arma::colvec& eigval);
 
 #endif
