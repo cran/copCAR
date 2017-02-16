@@ -4,143 +4,161 @@
 \alias{copCAR}
 \title{Fit copCAR model to discrete areal data.}
 \usage{
-copCAR(formula, A, family, method = c("CML", "DT", "CE"),
-  conf.int = c("none", "bootstrap", "asymptotic"), data, offset = NULL,
-  control = list())
+copCAR(formula, family, data, offset, A, method = c("CML", "DT", "CE"),
+  confint = c("none", "bootstrap", "asymptotic"), model = TRUE, x = FALSE,
+  y = TRUE, verbose = FALSE, control = list())
 }
 \arguments{
 \item{formula}{an object of class "\code{\link{formula}}" (or one that can be coerced to that class): a symbolic description of the model to be fitted. The details of the model specification are given under "Details".}
 
-\item{A}{the symmetric binary adjacency matrix for the underlying graph. \code{\link{adjacency.matrix}} generates an adjacency matrix for the \eqn{m} by \eqn{n} square lattice.}
-
-\item{family}{the marginal distribution of the observations at the areal units and link function to be used in the model. This can be a character string naming a family function, a family function or the result of a call to a family function. (See \code{\link{family}} for details of family functions.) Supported families are \code{binomial} and \code{poisson}.}
-
-\item{method}{the method for inference. \code{copCAR} supports the continous extension ("\code{CE}"), distributional transform ("\code{DT}"), and composite marginal likelihood ("\code{CML}").}
-
-\item{conf.int}{the method for computing confidence intervals. \code{"asympototic"} is appropriate for the continous extension. \code{"bootstrap"} performs a parametric boostrap appropriate for the distributional transform and composite marginal likelihood.}
+\item{family}{the marginal distribution of the observations at the areal units and link function to be used in the model. This can be a character string naming a family function, a family function or the result of a call to a family function. (See \code{\link{family}} for details of family functions.) Supported families are \code{binomial}, \code{negbinomial}, and \code{poisson}.}
 
 \item{data}{an optional data frame, list or environment (or object coercible by \code{\link{as.data.frame}} to a data frame) containing the variables in the model. If not found in data, the variables are taken from \code{environment(formula)}, typically the environment from which \code{copCAR} is called.}
 
 \item{offset}{this can be used to specify an \emph{a priori} known component to be included in the linear predictor during fitting. This should be \code{NULL} or a numeric vector of length equal to the number of observations. One or more \code{\link{offset}} terms can be included in the formula instead or as well, and if more than one is specified their sum is used. See \code{\link{model.offset}}.}
 
+\item{A}{the symmetric binary adjacency matrix for the underlying graph. \code{\link{adjacency.matrix}} generates an adjacency matrix for the \eqn{m} by \eqn{n} square lattice.}
+
+\item{method}{the method for inference. \code{copCAR} supports the continous extension ("\code{CE}"), distributional transform ("\code{DT}"), and composite marginal likelihood ("\code{CML}").}
+
+\item{confint}{the method for computing confidence intervals. \code{"asympototic"} is appropriate for the continous extension. \code{"bootstrap"} performs a parametric boostrap appropriate for the distributional transform and composite marginal likelihood.}
+
+\item{model}{a logical value indicating whether the model frame should be included as a component of the returned value.}
+
+\item{x}{a logical value indicating whether the model matrix used in the fitting process should be returned as a component of the returned value.}
+
+\item{y}{a logical value indicating whether the response vector used in the fitting process should be returned as a component of the returned value.}
+
+\item{verbose}{a logical value indicating whether to print various messages to the screen, including progress updates. Defaults to \code{FALSE}.}
+
 \item{control}{a list of parameters for controlling the fitting process.
 \describe{
-       \item{\code{conf.level}}{the value \eqn{1 - \alpha} used for computing confidence intervals. Defaults to \code{0.95}.}
-       \item{\code{boot.iter}}{the size of the parametric bootstrap sample. This applies when \code{conf.int = "bootstrap"}. Defaults to \code{500}.}
-       \item{\code{m}}{the number of independent standard uniforms used to approximate the expected likelhood when \code{method = "CE"}. This applies when \code{method = "CE"}. Defaults to \code{1000}.}
-       \item{\code{mcse}}{logical. Should the Monte Carlo standard error for \eqn{\rho} be computed? Use only when \code{method = "CE"}. Defaults to FALSE. The Monte Carlo standard error is calculated using a sample size of \code{mcse.iter}.}
-       \item{\code{mcse.iter}}{the Monte Carlo standard error sample size for \eqn{\rho} when \code{method = "CE"} and \code{mcse = TRUE}. Defaults to \code{100}.}
-       \item{\code{rhoMax}}{the value \eqn{\rho^{\max}}, which is the maximum value of \eqn{\rho} used to approximate the CAR variances when \code{method = "CE"} or \code{method = "DT"}. If missing, assumed to be \code{0.999}.}
-       \item{\code{epsilon}}{the tolerance \eqn{\epsilon > 0} used to approximate the CAR variances when \code{method = "CE"} or \code{method = "DT"}. If missing, assumed to be \code{0.001}.}
-       \item{\code{verbose}}{a logical value indicating whether to print bootstrap or mcse progress to the screen. Defaults to \code{FALSE}.}
-}}
+       \item{\code{bootit}}{the size of the (parametric) bootstrap sample. This applies when \code{confint = "bootstrap"}, or when \code{confint = "asymptotic"} and \code{method = "CML"} or \code{method = "DT"} . Defaults to \code{500}.}
+       \item{\code{m}}{the number of vectors of standard uniforms used to approximate the expected likelhood when \code{method = "CE"}. Defaults to \code{1000}.}
+       \item{\code{rho.max}}{the value \eqn{\rho^{\max}}, which is the maximum value of \eqn{\rho} used to approximate the CAR variances when \code{method = "CE"} or \code{method = "DT"}. If missing, assumed to be \code{0.999}.}
+       \item{\code{epsilon}}{the tolerance \eqn{\epsilon > 0} used to approximate the CAR variances when \code{method = "CE"} or \code{method = "DT"}. If missing, assumed to be \code{0.01}.}
+       item{\code{maxit}}{the maximum number of iterations to be used by \code{\link{optim}} when optimizing the objective function. Defaults to \code{1000}.}
+       \item{\code{parallel}}{a logical value indicating whether to parallelize the bootstrap. This defaults to \code{TRUE} if the \pkg{parallel} package can be loaded.}
+       \item{\code{type}}{the cluster type, one of \dQuote{\code{SOCK}} (default), \dQuote{\code{PVM}}, \dQuote{\code{MPI}}, or \dQuote{\code{NWS}}.}
+       \item{\code{nodes}}{the number of slave nodes to create.}}}
 }
 \value{
-\code{copCAR} returns an object of S3 class \code{"copCAR"}, which is a list containing the following components:
-        \item{coefficients}{the point estimate of \eqn{(\rho, \beta')'}.}
-        \item{conf.int}{(if \code{conf.int} is not \code{"none"}) the confidence intervals for \eqn{(\rho, \beta')'}.}
-        \item{conf.type}{ the type of confidence interval specified.}
-        \item{conf.level}{(if \code{conf.int} is not \code{"none"}) the confidence level, \eqn{1 - \alpha}.}
-        \item{mcse}{(if \code{method = "CE"} and \code{mcse = TRUE}) the Monte Carlo standard error of \eqn{\rho}.}
-        \item{mcse.iter}{(if \code{method = "CE"} and \code{mcse = TRUE}) the Monte Carlo standard error sample size.}
-        \item{mcse.cv}{(if \code{method = "CE"} and \code{mcse = TRUE}) the estimated coefficient of variation of \eqn{\rho}.}
-        \item{I.inv}{(if \code{conf.int = "asymptotic"}) the estimated inverse observed Fisher information matrix (hessian) for \eqn{(\Phi^{-1}(\rho), \beta')'}.}
-        \item{G.inv}{(if \code{conf.int = "bootstrap"}) the estimated inverse Godambe information matrix (sandwich) for \eqn{(\Phi^{-1}(\rho), \beta')'}.}
-        \item{se}{(if \code{conf.int = "bootstrap"} or \code{conf.int = "asymptotic"}) the estimated standard errors for \eqn{(\Phi^{-1}(\rho), \beta')'}.}
-        \item{boot.iter}{(if \code{conf.int = "bootstrap"}) the number of parametric bootstrap samples.}
-        \item{Z}{the response vector used.}
-        \item{X}{the design matrix.}
-        \item{model}{the model frame.}
-        \item{npar}{the number of model parameters.}
-        \item{marginal.linear.predictors}{linear predictors for the margins.}
-        \item{marginal.fitted.values}{fitted values for the margins.}
+\code{copCAR} returns an object of class \code{"copCAR"}, which is a list containing the following components:
+        \item{boot.sample}{(if \code{confint = "bootstrap"}) the bootstrap sample.}
         \item{call}{the matched call.}
-        \item{formula}{the formula supplied.}
-        \item{method}{the method used for inference.}
-        \item{convergence}{the integer code returned by \code{\link{optim}} subsequent to optimizing the log-likelihood.}
-        \item{message}{a character string to go along with \code{convergence}.}
-        \item{terms}{the \code{terms} object used.}
-        \item{data}{the \code{data} argument.}
-        \item{xlevels}{(where relevant) a record of the levels of the factors used in fitting.}
+        \item{coefficients}{a named vector of parameter estimates.}
+        \item{confint}{the value of \code{confint} supplied in the function call.}
         \item{control}{a list containing the names and values of the control parameters.}
-        \item{value}{the value of the negative log-likelihood at its minimum.}
+        \item{convergence}{the integer code returned by \code{\link{optim}}.}
+        \item{cov.hat}{(if \code{confint = "asymptotic"}) the estimate of the asymptotic covariance matrix of the parameter estimator.}
+        \item{data}{the \code{data} argument.}
+        \item{family}{the \code{\link{family}} object used.}
+        \item{fitted.values}{the fitted mean values, obtained by transforming the linear predictors by the inverse of the link function.}
+        \item{formula}{the formula supplied.}
+        \item{linear.predictors}{the linear fit on link scale.}
+        \item{message}{A character string giving any additional information returned by the optimizer, or \code{NULL}.}
+        \item{method}{the method (CE, CML, or DT) used for inference.}
+        \item{model}{if requested (the default), the model frame.}
+        \item{npar}{the number of model parameters.}
+        \item{offset}{the offset vector used.}
+        \item{residuals}{the response residuals, i.e., the outcomes minus the fitted values.}
+        \item{terms}{the \code{\link{terms}} object used.}
+        \item{value}{the value of the objective function at its minimum.}
+        \item{x}{if requested, the model matrix.}
+        \item{xlevels}{(where relevant) a record of the levels of the factors used in fitting.}
+        \item{y}{if requested (the default), the response vector used.}
 }
 \description{
-Fit the copCAR model to areal data consisting of Poisson or Bernoulli marginal observations.
+Fit the copCAR model to Bernoulli, negative binomial, or Poisson observations.
 }
 \details{
-This function performs frequentist inference for the copCAR model of Hughes (2014), a copula-based areal regression model that uses the conditional autoregression (CAR) from the spatial generalized linear mixed model (Besag, 1974). Specifically, copCAR uses the CAR copula, a Caussian copula based on the proper CAR. The CAR copula is specified as \deqn{C_{Q^{-1}}(u) = \Phi_{Q^{-1}}(\Phi_{\sigma_1}^{-1}(u_1), \dots, \Phi_{\sigma_n}^{-1}(u_n)),} where \eqn{\Phi_{\sigma_i}} denotes the cdf of the normal distribution with mean zero and variance \eqn{\sigma_i^2}, \eqn{Q = D - \rho A} such that \eqn{\tau Q} is the precision matrix of the proper CAR, \eqn{A} is the adjacency matrix for the underlying graph, \eqn{D = diag(d_1, \dots, d_n)} where \eqn{d_i} is the degree of vertex \eqn{i} of the underlying graph, and \eqn{u = (u_1, \dots, u_n)'} is a realization of the copula such that \eqn{z_i = F_i^{-1}(u_i)} for the marginal observation \eqn{z_i} having desired marginal distribution function \eqn{F_i}. For Bernoulli marginals, the expectation is \eqn{(1 + \exp(-x_i'\beta))^{-1}}; for Poisson marginals, the expectation is \eqn{\exp(x_i'\beta)}, where \eqn{\beta = (\beta_1, \dots, \beta_p)'} is the regression coefficient. Note that the CAR variances \eqn{(\sigma_1^2, \dots, \sigma_n^2)' = vecdiag(Q^{-1})} are not free parameters but are determined by the spatial dependence parameter \eqn{\rho}.
-\cr
-\cr
-The spatial dependence parameter \eqn{\rho \in [0, 1)} and regression coefficient \eqn{\beta = (\beta_1, \dots, \beta_p)' \in R^p} can be estimated using the continous extension (CE) (Madsen, 2009), distribtional transform (DT) (Kazianka and Pilz, 2010), or composite marginal likelihood (CML) (Varin, 2008).
-\cr
-\cr
-The CE approach optimizes an approximate maximum likelihood by sampling \eqn{m} independent standard uniform vectors of length \eqn{n} used to transform the discrete observations into continous random variables via convolution (Denuit and Lambert, 2005). The size of \eqn{m} can be choosen by computing Monte Carlo standard errors (Flegal et al., 2008). If the Monte Carlo standard error of the estimate for \eqn{\rho} is small relative to the sample mean, that is, if the estimated coefficient of variation is sufficiently small, the current value of \eqn{m} is sufficiently large. The CE is exact up to Monte Carlo standard error, but is computationally intensive and not suitable for Bernoulli marginals. If requested, asymptotic confidence intervals for the parameters are computed using the observed inverse Fisher information.
-\cr
-\cr
-The DT stochastically "smoothes" the jumps of the discrete distribution function, an approach that goes at least as far back as Ferguson (1967). The DT-based approximation performs well for Poisson marginals. Since the log-likelihood is misspecified, the asympototic covariance matrix is the Godambe information matrix (Godambe, 1960). This is estimated using a parametric bootstrap for the variance of the score when computing confidence intervals for the parameters.
-\cr
-\cr
-The CML approach specifies the likelihood as a product of pairwise likelihoods of adjacent observations, and performs well for both Poisson and Bernoulli data. Similar to the DT, the log-likelihood is misspecified, so the confidence intervals for the parameters are computed via a parametric bootstrap.
-\cr
-\cr
-In the CE and DT approaches, the CAR variances are approximated by \eqn{(\tilde{\sigma}_1^2, \dots, \tilde{\sigma}_n^2)'} such that \eqn{(\sigma_i^2 - \tilde{\sigma}_i^2) < \epsilon} for every \eqn{i = 1, \dots, n} for a specified tolerance \eqn{\epsilon > 0} and every \eqn{\rho \in [0, \rho^{\max})}.
-\cr
-\cr
+This function performs frequentist inference for the copCAR model proposed by Hughes (2015). copCAR is a copula-based areal regression model that employs the proper conditional autoregression (CAR) introduced by Besag, York, and Mollié (1991). Specifically, copCAR uses the CAR copula, a Caussian copula based on the proper CAR.
+
+
+The spatial dependence parameter \eqn{\rho \in [0, 1)}, regression coefficients \eqn{\beta = (\beta_1, \dots, \beta_p)' \in R^p}, and, for negative binomial margins, dispersion parameter \eqn{\theta>0} can be estimated using the continous extension (CE) (Madsen, 2009), distributional transform (DT) (Kazianka and Pilz, 2010), or composite marginal likelihood (CML) (Varin, 2008) approaches.
+
+
+The CE approach transforms the discrete observations to continous outcomes by convolving them with independent standard uniforms (Denuit and Lambert, 2005). The true likelihood for the discrete outcomes is the expected likelihood for the transformed outcomes. An estimate (sample mean) of the expected likelihood is optimized to estimate the copCAR parameters. The number of standard uniform vectors, \eqn{m}, can be chosen by the user. The default value is 1,000. The CE approach is exact up to Monte Carlo standard error but is computationally intensive (the computational burden grows rapidly with increasing \eqn{m}). The CE approach tends to perform poorly when applied to Bernoulli outcomes, and so that option is not permitted. 
+
+
+The distributional transform stochastically "smoothes" the jumps of a discrete distribution function (Ferguson, 1967). The DT-based approximation (Kazianka and Pilz, 2010) for copCAR performs well for Poisson and negative binomial marginals but, like the CE approach, tends to perform poorly for Bernoulli outcomes.
+
+
+The CML approach optimizes a composite marginal likelihood formed as the product of pairwise likelihoods of adjacent observations. This approach performs well for Bernoulli, negative binomial, and Poisson outcomes.
+
+
+In the CE and DT approaches, the CAR variances are approximated. The quality of the approximation is determined by the values of control parameters \eqn{\epsilon > 0} and \eqn{\rho^{\max} \in [0, 1)}. The default values are 0.01 and 0.999, respectively.
+
+
+When \code{confint = "bootstrap"}, a parametric bootstrap is carried out, and confidence intervals are computed using the quantile method. Monte Carlo standard errors (Flegal et al., 2008) of the quantile estimators are also provided.
+
+
+When \code{confint = "asymptotic"}, confidence intervals are computed using an estimate of the asymptotic covariance matrix of the estimator. For the CE method, the inverse of the observed Fisher information matrix is used. For the CML and DT methods, the objective function is misspecified, and so the asymptotic covariance matrix is the inverse of the Godambe information matrix (Godambe, 1960), which has a sandwich form. The "bread" is the inverse of the Fisher information matrix, and the "meat" is the covariance matrix of the score function. The former is estimated using the inverse of the observed Fisher information matrix. The latter is estimated using a parametric bootstrap.
 }
 \examples{
 \dontrun{
-# Simulate data and fit copCAR model.
+# Simulate data and fit copCAR to them.
 
 # Use the 20 x 20 square lattice as the underlying graph.
+
 m = 20
 A = adjacency.matrix(m)
 
-# Set dependence parameter and regression coefficients.
-rho = 0.8
-beta = c(1, 1)
-
-# Create design matrix by assigning coordinates to each vertex
+# Create a design matrix by assigning coordinates to each vertex
 # such that the coordinates are restricted to the unit square.
+
 x = rep(0:(m - 1) / (m - 1), times = m)
 y = rep(0:(m - 1) / (m - 1), each = m)
 X = cbind(x, y)
 
-# Draw Poisson data from copCAR model.
-Z = rcopCAR(rho, beta, X, A, family = poisson(link = "log"))
+# Set the dependence parameter and regression coefficients.
 
-# Fit the copCAR model using the continous extension and
-# compute 95\% (default) aysmptotic CI for rho and beta.
-fit.CE = copCAR(Z ~ X - 1, A, family = poisson, method = "CE", conf.int = "asymptotic")
-summary(fit.CE)
+rho = 0.995      # strong dependence
+beta = c(1, 1)   # the mean surface increases in the direction of (1, 1)
 
-# Fit the copCAR model using the distributional transform and
-# compute 90\% CI for rho and beta using 100 bootstrap iterations.
-fit.DT = copCAR(Z ~ X - 1, A, family = poisson, method = "DT", conf.int = "bootstrap",
-                control = list(conf.level = 0.90, boot.iter = 100))
-summary(fit.DT)
+# Simulate Poisson data from model.
 
-# Fit the copCAR model using composite marginal likelihood and
-# do not compute a CI for rho and beta.
-fit.CML = copCAR(Z ~ X - 1, A, family = poisson, method = "CML", conf.int = "none")
-summary(fit.CML)
+z = rcopCAR(rho, beta, X, A, family = poisson(link = "log"))
+
+# Fit the copCAR model using the continous extension, and compute 95\% (default)
+# asymptotic confidence intervals for rho and beta. Use m equal to 100.
+
+fit.ce = copCAR(z ~ X - 1, A, family = poisson, method = "CE", confint = "asymptotic",
+                control = list(m = 100))
+summary(fit.ce)
+
+# Fit the copCAR model using the DT approximation, and compute 90\% confidence
+# intervals. Bootstrap the intervals, based on a bootstrap sample of size 100.
+# Do the bootstrap in parallel, using ten nodes.
+
+fit.dt = copCAR(z ~ X - 1, A, family = poisson, method = "DT", confint = "bootstrap",
+                control = list(bootit = 100, nodes = 10))
+summary(fit.dt, alpha = 0.9)
+
+# Fit the copCAR model using the composite marginal likelihood approach.
+# Do not compute confidence intervals.
+
+fit.cml = copCAR(z ~ X - 1, A, family = poisson, method = "CML", confint = "none")
+summary(fit.cml)
 }
 }
 \references{
-Besag, J. (1974) Spatial interaction and the statistical analysis of lattice systems.  \emph{Journal of the Royal Statistical Soceity, Series B, Methodological}, 36(2), 192--236.
+Besag, J., York, J., and Mollié, A. (1991) Bayesian image restoration, with two applications in spatial statistics. \emph{Annals of the Institute of Statistical Mathematics}, \bold{43}(1), 1--20.
 
-Denuit, M. and Lambert, P. (2005) Constraints on concordance measures in bivariate discrete data. \emph{Journal of Multivariate Analysis}, 93, 40--57.
+Denuit, M. and Lambert, P. (2005) Constraints on concordance measures in bivariate discrete data. \emph{Journal of Multivariate Analysis}, \bold{93}, 40--57.
 
 Ferguson, T. (1967) \emph{Mathematical statistics: a decision theoretic approach}, New York: Academic Press.
 
 Flegal, J., Haran, M., and Jones, G. (2008) Markov Chain Monte Carlo: can we trust the third significant figure? \emph{Statistical Science}, 23(2), 250--260.
 
-Godambe, V. (1960) An optimum property of regular maximum likelihood estimation. \emph{The Annals of Mathmatical Statistics}, 31(4), 1208--1211.
+Godambe, V. (1960) An optimum property of regular maximum likelihood estimation. \emph{The Annals of Mathmatical Statistics}, \bold{31}(4), 1208--1211.
 
-Kazianka, H. and Pilz, J. (2010) Copula-based geostatistical modeling of continuous and discrete data including covariates. \emph{Stochastic Environmental Research and Risk Assessment}, 24(5), 661--673.
+Hughes, J. (2015) copCAR: A flexible regression model for areal data.  \emph{Journal of Computational and Graphical Statistics}, \bold{24}(3), 733--755.
 
-Madsen, L. (2009) Maximum likelihood estimation of regression parameters with spatially dependent discrete data. \emph{Journal of Agricultural, Biological, and Environmental Statistics}, 14(4), 375--391.
+Kazianka, H. and Pilz, J. (2010) Copula-based geostatistical modeling of continuous and discrete data including covariates. \emph{Stochastic Environmental Research and Risk Assessment}, \bold{24}(5), 661--673.
 
-Varin, C. (2008) On composite marginal likelihoods. \emph{Advances in Statistical Analysis}, 92(1), 1--28.
+Madsen, L. (2009) Maximum likelihood estimation of regression parameters with spatially dependent discrete data. \emph{Journal of Agricultural, Biological, and Environmental Statistics}, \bold{14}(4), 375--391.
+
+Varin, C. (2008) On composite marginal likelihoods. \emph{Advances in Statistical Analysis}, \bold{92}(1), 1--28.
 }
 

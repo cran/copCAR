@@ -23,6 +23,7 @@ using namespace arma;
 //    return Rcpp::wrap(M);
 //'
 
+// [[Rcpp::export]]
 arma::mat buildM_(const mat& B, int k, const colvec& eigval)
 {
     int n = eigval.n_elem;

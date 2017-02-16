@@ -2,7 +2,7 @@
 % Please edit documentation in R/copCAR.R
 \name{adjacency.matrix}
 \alias{adjacency.matrix}
-\title{Create adjacency matrix.}
+\title{Return an adjacency matrix for a square lattice.}
 \usage{
 adjacency.matrix(m, n = NULL)
 }
@@ -12,12 +12,12 @@ adjacency.matrix(m, n = NULL)
 \item{n}{the number of columns in the lattice. Defaults to \code{NULL}. If missing, the lattice is assumed to be \code{m} by \code{m}.}
 }
 \value{
-A matrix \eqn{A} of 0s and 1s, where \eqn{(A_{ij})} is equal to 1 if and only if vertices \eqn{i} and \eqn{j} are adjacent.
+A matrix \eqn{A} of 0s and 1s, where \eqn{A_{ij}} is equal to 1 iff vertices \eqn{i} and \eqn{j} are adjacent.
 }
 \description{
-Create adjacency matrix.
+Return an adjacency matrix for a square lattice.
 }
 \details{
-This function builds the adjacency matrix for a \code{m} by \code{n} square lattice.
+This function builds the adjacency matrix for the \code{m} by \code{n} square lattice.
 }
 

@@ -1,15 +1,12 @@
 
-#' @import Rcpp
-
 buildM = Module("buildM")
-inverse = Module("inverse")
 
 .onAttach = function(libname, pkgname)
 {
     temp = packageDescription("copCAR")
     msg = paste(temp$Package, ": ", temp$Title, "\n", "Version ", temp$Version,
                 " created on ", temp$Date, ".\n", sep = "")
-    msg = paste(msg, "copyright (c) 2014-2016, John Hughes, University of Colorado Denver\n",
+    msg = paste(msg, "copyright (c) 2014-2017, John Hughes, University of Colorado Denver\n",
                 sep = "")
     msg = paste(msg, 'For citation information, type citation("copCAR").\n', sep = "")
     msg = paste(msg, 'Type help(package = copCAR) to get started.\n', sep = "")

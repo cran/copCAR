@@ -2,7 +2,7 @@
 % Please edit documentation in R/copCAR.R
 \name{vcov.copCAR}
 \alias{vcov.copCAR}
-\title{Return the covariance matrix of the parameters of a \code{copCAR} model object.}
+\title{Return the estimated covariance matrix for a \code{copCAR} model object.}
 \usage{
 \method{vcov}{copCAR}(object, ...)
 }
@@ -12,12 +12,15 @@
 \item{\dots}{additional arguments.}
 }
 \value{
-An estimate of the covariance matrix of \eqn{(\Phi^{-1}(\rho), \beta')'}.
+An estimate of the covariance matrix of the CE/CML/DT estimator of the parameters.
 }
 \description{
-Return the covariance matrix of the parameters of a \code{copCAR} model object.
+Return the estimated covariance matrix for a \code{copCAR} model object.
 }
-\seealso{
-\code{\link{copCAR}}
+\details{
+Unless \code{\link{copCAR}} was called with \code{confint = "none"}, this function returns an estimate of the covariance matrix of the CE/CML/DT estimator of the parameters. If \code{confint = "bootstrap"}, \code{\link{cov}} is applied to the bootstrap sample to compute the estimate. If \code{confint = "asymptotic"}, an estimate of the asymptotic covariance matrix is returned; this is an estimate of the inverse Fisher information matrix if \code{method = "CE"}, or an estimate of the inverse of the Godambe information matrix if \code{method = "CML"} or \code{method = "DT"}. Note that the entries involving the spatial dependence parameter are for \eqn{\gamma=\Phi^{-1}(\rho)} rather than for \eqn{\rho} (Hughes, 2015).
+}
+\references{
+Hughes, J. (2015) copCAR: A flexible regression model for areal data.  \emph{Journal of Computational and Graphical Statistics}, \bold{24}(3), 733--755.
 }
 
