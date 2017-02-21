@@ -29,4 +29,3 @@ Flegal, J., Haran, M., and Jones, G. (2008) Markov Chain Monte Carlo: can we tru
 \seealso{
 \code{\link{copCAR}}
 }
-

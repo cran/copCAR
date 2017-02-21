@@ -9,7 +9,7 @@ copCAR(formula, family, data, offset, A, method = c("CML", "DT", "CE"),
   y = TRUE, verbose = FALSE, control = list())
 }
 \arguments{
-\item{formula}{an object of class "\code{\link{formula}}" (or one that can be coerced to that class): a symbolic description of the model to be fitted. The details of the model specification are given under "Details".}
+\item{formula}{an object of class \dQuote{\code{\link{formula}}} (or one that can be coerced to that class): a symbolic description of the model to be fitted. The details of the model specification are given under "Details".}
 
 \item{family}{the marginal distribution of the observations at the areal units and link function to be used in the model. This can be a character string naming a family function, a family function or the result of a call to a family function. (See \code{\link{family}} for details of family functions.) Supported families are \code{binomial}, \code{negbinomial}, and \code{poisson}.}
 
@@ -17,11 +17,11 @@ copCAR(formula, family, data, offset, A, method = c("CML", "DT", "CE"),
 
 \item{offset}{this can be used to specify an \emph{a priori} known component to be included in the linear predictor during fitting. This should be \code{NULL} or a numeric vector of length equal to the number of observations. One or more \code{\link{offset}} terms can be included in the formula instead or as well, and if more than one is specified their sum is used. See \code{\link{model.offset}}.}
 
-\item{A}{the symmetric binary adjacency matrix for the underlying graph. \code{\link{adjacency.matrix}} generates an adjacency matrix for the \eqn{m} by \eqn{n} square lattice.}
+\item{A}{the symmetric binary adjacency matrix for the underlying graph.}
 
-\item{method}{the method for inference. \code{copCAR} supports the continous extension ("\code{CE}"), distributional transform ("\code{DT}"), and composite marginal likelihood ("\code{CML}").}
+\item{method}{the method for inference. \code{copCAR} supports the continous extension (\dQuote{\code{CE}}), distributional transform (\dQuote{\code{DT}}), and composite marginal likelihood (\dQuote{\code{CML}}).}
 
-\item{confint}{the method for computing confidence intervals. \code{"asympototic"} is appropriate for the continous extension. \code{"bootstrap"} performs a parametric boostrap appropriate for the distributional transform and composite marginal likelihood.}
+\item{confint}{the method for computing confidence intervals. This defaults to \dQuote{\code{none}}. The other options are \dQuote{\code{bootstrap}} (for parametric bootstrap intervals using the quantile method) and \dQuote{\code{asymptotic}} (for intervals computed using an estimate of the asymptotic covariance matrix).}
 
 \item{model}{a logical value indicating whether the model frame should be included as a component of the returned value.}
 
@@ -33,7 +33,7 @@ copCAR(formula, family, data, offset, A, method = c("CML", "DT", "CE"),
 
 \item{control}{a list of parameters for controlling the fitting process.
 \describe{
-       \item{\code{bootit}}{the size of the (parametric) bootstrap sample. This applies when \code{confint = "bootstrap"}, or when \code{confint = "asymptotic"} and \code{method = "CML"} or \code{method = "DT"} . Defaults to \code{500}.}
+       \item{\code{bootit}}{the size of the (parametric) bootstrap sample. This applies when \code{confint = "bootstrap"}, or when \code{confint = "asymptotic"} and \code{method = "CML"} or \code{method = "DT"}. Defaults to \code{500}.}
        \item{\code{m}}{the number of vectors of standard uniforms used to approximate the expected likelhood when \code{method = "CE"}. Defaults to \code{1000}.}
        \item{\code{rho.max}}{the value \eqn{\rho^{\max}}, which is the maximum value of \eqn{\rho} used to approximate the CAR variances when \code{method = "CE"} or \code{method = "DT"}. If missing, assumed to be \code{0.999}.}
        \item{\code{epsilon}}{the tolerance \eqn{\epsilon > 0} used to approximate the CAR variances when \code{method = "CE"} or \code{method = "DT"}. If missing, assumed to be \code{0.01}.}
@@ -116,7 +116,7 @@ X = cbind(x, y)
 rho = 0.995      # strong dependence
 beta = c(1, 1)   # the mean surface increases in the direction of (1, 1)
 
-# Simulate Poisson data from model.
+# Simulate Poisson data from the model.
 
 z = rcopCAR(rho, beta, X, A, family = poisson(link = "log"))
 
@@ -161,4 +161,3 @@ Madsen, L. (2009) Maximum likelihood estimation of regression parameters with sp
 
 Varin, C. (2008) On composite marginal likelihoods. \emph{Advances in Statistical Analysis}, \bold{92}(1), 1--28.
 }
-

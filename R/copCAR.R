@@ -63,7 +63,7 @@ build.M = function(A, d, rho.max, epsilon)
     lam = eig$values
     Einv = solve(E)
     B = E * t(Einv)
-    M = suppressWarnings(Re(buildM$buildM_(B, k, lam)))
+    M = suppressWarnings(Re(buildM_(B, k, lam)))
     M
 }
 
@@ -86,9 +86,9 @@ neighbor.list = function(A)
 #' @usage negbinomial(theta = stop("'theta' must be specified."), link = "log")
 #'
 #' @param theta the dispersion parameter (must be positive).
-#' @param link the link function, as a character string, name, or one-element character vector, specifying one of \code{log}, \code{sqrt}, or \code{identity}, or an object of class "\code{\link[=family]{link-glm}}"
+#' @param link the link function, as a character string, name, or one-element character vector, specifying one of \code{log}, \code{sqrt}, or \code{identity}, or an object of class \dQuote{\code{\link[=family]{link-glm}}}
 #'
-#' @return An object of class "\code{family}", a list of functions and expressions needed to fit a negative binomial GLM.
+#' @return An object of class \dQuote{\code{family}}, a list of functions and expressions needed to fit a negative binomial GLM.
 #'
 #' @export
 
@@ -149,7 +149,7 @@ negbinomial = function(theta = stop("'theta' must be specified."), link = "log")
 #' @param rho the spatial dependence parameter \eqn{\rho} such that \eqn{\rho \in [0, 1)}.
 #' @param beta the vector of regression coefficients \eqn{\beta = (\beta_1, \dots, \beta_p)'}.
 #' @param X the \eqn{n} by \eqn{p} design matrix \eqn{X}.
-#' @param A the symmetric binary adjacency matrix for the underlying graph. \code{\link{adjacency.matrix}} generates the adjacency matrix for the \eqn{m} by \eqn{n} square lattice.
+#' @param A the symmetric binary adjacency matrix for the underlying graph.
 #' @param family the marginal distribution of the observations and link function to be used in the model. This can be a character string naming a family function, a family function, or the result of a call to a family function. (See \code{\link{family}} for details of family functions.) Supported familes are \code{binomial}, \code{poisson}, and \code{negbinomial}.
 #'
 #' @return A vector of length \eqn{n} distributed according to the specified copCAR model.
@@ -537,7 +537,6 @@ copCAR.bootstrap = function(params, X, A, offset, family, method, control, verbo
     else
     {
         cl = parallel::makeCluster(control$nodes, control$type)
-        #parallel::clusterSetRNGStream(cl, NULL)
         parallel::clusterEvalQ(cl, library(copCAR))
         if (verbose && requireNamespace("pbapply", quietly = TRUE))
 		{
@@ -626,7 +625,6 @@ copCAR.asymptotic = function(params, X, A, offset, family, method, bread, contro
     else
     {
         cl = parallel::makeCluster(control$nodes, control$type)
-        #parallel::clusterSetRNGStream(cl, NULL)
         parallel::clusterEvalQ(cl, library(copCAR))
         if (verbose && requireNamespace("pbapply", quietly = TRUE))
 		{
@@ -732,6 +730,8 @@ copCAR.control = function(method, confint, control, verbose)
 		else
 			control$bootit = control$parallel = control$type = control$nodes = NULL
     }
+	else
+		control$bootit = control$parallel = control$type = control$nodes = NULL
     control
 }
 
@@ -763,20 +763,20 @@ copCAR.control = function(method, confint, control, verbose)
 #' When \code{confint = "asymptotic"}, confidence intervals are computed using an estimate of the asymptotic covariance matrix of the estimator. For the CE method, the inverse of the observed Fisher information matrix is used. For the CML and DT methods, the objective function is misspecified, and so the asymptotic covariance matrix is the inverse of the Godambe information matrix (Godambe, 1960), which has a sandwich form. The "bread" is the inverse of the Fisher information matrix, and the "meat" is the covariance matrix of the score function. The former is estimated using the inverse of the observed Fisher information matrix. The latter is estimated using a parametric bootstrap.
 #'
 #'
-#' @param formula an object of class "\code{\link{formula}}" (or one that can be coerced to that class): a symbolic description of the model to be fitted. The details of the model specification are given under "Details".
+#' @param formula an object of class \dQuote{\code{\link{formula}}} (or one that can be coerced to that class): a symbolic description of the model to be fitted. The details of the model specification are given under "Details".
 #' @param family the marginal distribution of the observations at the areal units and link function to be used in the model. This can be a character string naming a family function, a family function or the result of a call to a family function. (See \code{\link{family}} for details of family functions.) Supported families are \code{binomial}, \code{negbinomial}, and \code{poisson}.
 #' @param data an optional data frame, list or environment (or object coercible by \code{\link{as.data.frame}} to a data frame) containing the variables in the model. If not found in data, the variables are taken from \code{environment(formula)}, typically the environment from which \code{copCAR} is called.
 #' @param offset this can be used to specify an \emph{a priori} known component to be included in the linear predictor during fitting. This should be \code{NULL} or a numeric vector of length equal to the number of observations. One or more \code{\link{offset}} terms can be included in the formula instead or as well, and if more than one is specified their sum is used. See \code{\link{model.offset}}.
-#' @param A the symmetric binary adjacency matrix for the underlying graph. \code{\link{adjacency.matrix}} generates an adjacency matrix for the \eqn{m} by \eqn{n} square lattice.
-#' @param method the method for inference. \code{copCAR} supports the continous extension ("\code{CE}"), distributional transform ("\code{DT}"), and composite marginal likelihood ("\code{CML}").
-#' @param confint the method for computing confidence intervals. \code{"asympototic"} is appropriate for the continous extension. \code{"bootstrap"} performs a parametric boostrap appropriate for the distributional transform and composite marginal likelihood.
+#' @param A the symmetric binary adjacency matrix for the underlying graph.
+#' @param method the method for inference. \code{copCAR} supports the continous extension (\dQuote{\code{CE}}), distributional transform (\dQuote{\code{DT}}), and composite marginal likelihood (\dQuote{\code{CML}}).
+#' @param confint the method for computing confidence intervals. This defaults to \dQuote{\code{none}}. The other options are \dQuote{\code{bootstrap}} (for parametric bootstrap intervals using the quantile method) and \dQuote{\code{asymptotic}} (for intervals computed using an estimate of the asymptotic covariance matrix).
 #' @param model a logical value indicating whether the model frame should be included as a component of the returned value.
 #' @param x a logical value indicating whether the model matrix used in the fitting process should be returned as a component of the returned value.
 #' @param y a logical value indicating whether the response vector used in the fitting process should be returned as a component of the returned value.
 #' @param verbose a logical value indicating whether to print various messages to the screen, including progress updates. Defaults to \code{FALSE}.
 #' @param control a list of parameters for controlling the fitting process.
 #' \describe{
-#'        \item{\code{bootit}}{the size of the (parametric) bootstrap sample. This applies when \code{confint = "bootstrap"}, or when \code{confint = "asymptotic"} and \code{method = "CML"} or \code{method = "DT"} . Defaults to \code{500}.}
+#'        \item{\code{bootit}}{the size of the (parametric) bootstrap sample. This applies when \code{confint = "bootstrap"}, or when \code{confint = "asymptotic"} and \code{method = "CML"} or \code{method = "DT"}. Defaults to \code{500}.}
 #'        \item{\code{m}}{the number of vectors of standard uniforms used to approximate the expected likelhood when \code{method = "CE"}. Defaults to \code{1000}.}
 #'        \item{\code{rho.max}}{the value \eqn{\rho^{\max}}, which is the maximum value of \eqn{\rho} used to approximate the CAR variances when \code{method = "CE"} or \code{method = "DT"}. If missing, assumed to be \code{0.999}.}
 #'        \item{\code{epsilon}}{the tolerance \eqn{\epsilon > 0} used to approximate the CAR variances when \code{method = "CE"} or \code{method = "DT"}. If missing, assumed to be \code{0.01}.}
@@ -851,7 +851,7 @@ copCAR.control = function(method, confint, control, verbose)
 #' rho = 0.995      # strong dependence
 #' beta = c(1, 1)   # the mean surface increases in the direction of (1, 1)
 #'
-#' # Simulate Poisson data from model.
+#' # Simulate Poisson data from the model.
 #'
 #' z = rcopCAR(rho, beta, X, A, family = poisson(link = "log"))
 #'
@@ -939,6 +939,7 @@ copCAR = function(formula, family, data, offset, A, method = c("CML", "DT", "CE"
         warning("Optimization failed.")
         result$convergence = fit$convergence
         result$message = fit$message
+		result$call = call
         return(result)
     }
     npar = length(fit$par)
@@ -958,11 +959,14 @@ copCAR = function(formula, family, data, offset, A, method = c("CML", "DT", "CE"
 		}
 		else
 		{
-			if (method == "CE")
-				result$cov.hat = solve(fit$hessian)
+			cov.hat = try(solve(fit$hessian), silent = TRUE)
+			if (class(cov.hat) == "try-error")
+				result$cov.hat = NULL
+			else if (method == "CE")
+			    result$cov.hat = cov.hat
 			else
 			{
-				cov.hat = copCAR.asymptotic(fit$par, X, A, offset, family, method, solve(fit$hessian), control, verbose)
+				cov.hat = copCAR.asymptotic(fit$par, X, A, offset, family, method, cov.hat, control, verbose)
 				result$cov.hat = cov.hat
 			}
 		}
@@ -972,8 +976,6 @@ copCAR = function(formula, family, data, offset, A, method = c("CML", "DT", "CE"
     result$fitted.values = mu
 	result$residuals = Z - mu
     result$coefficients = c(pnorm(fit$par[1]), fit$par[-1])
-	#if (family$family == "negbinomial" && var(Z) < mean(Z))
-	#	results$coefficients[npar] = Inf
     result$confint = confint
 	result$family = family
     if (model)
@@ -1023,7 +1025,15 @@ copCAR = function(formula, family, data, offset, A, method = c("CML", "DT", "CE"
 summary.copCAR = function(object, alpha = 0.05, digits = 4, ...)
 {
     cat("\nCall:\n\n")
-    print(object$call)
+	print(object$call)
+    cat("\nConvergence:\n")
+    if (object$convergence != 0)
+    {
+    	cat("\nOptimization failed =>", object$message, "\n")
+		return(invisible())
+    }
+	else
+		cat("\nOptimization converged at", signif(-object$value, digits = 4), "\n")
     cat("\nControl parameters:\n")
     if (length(object$control) > 0)
     {
@@ -1042,6 +1052,7 @@ summary.copCAR = function(object, alpha = 0.05, digits = 4, ...)
 	    if (! is.null(boot.sample))
 	    {
 	        boot.sample[, 1] = pnorm(boot.sample[, 1])
+			boot.sample = boot.sample[complete.cases(boot.sample), ]
 	        lo = mcse.q.mat(boot.sample, alpha / 2)
 			hi = mcse.q.mat(boot.sample, 1 - alpha / 2)
 			confint = cbind(lo, hi)
@@ -1049,27 +1060,28 @@ summary.copCAR = function(object, alpha = 0.05, digits = 4, ...)
 		else
 		{
 			cov.hat = object$cov.hat
-			se = sqrt(diag(cov.hat))
-			scale = qnorm(1 - alpha / 2)
-			coef = object$coef
-			coef[1] = qnorm(coef[1])
-			confint = cbind(coef - scale * se, coef + scale * se)
-			confint[1, ] = pnorm(confint[1, ])
+			if (! is.null(cov.hat))
+			{
+			    se = sqrt(diag(cov.hat))
+			    scale = qnorm(1 - alpha / 2)
+			    coef = object$coef
+			    coef[1] = qnorm(coef[1])
+			    confint = cbind(coef - scale * se, coef + scale * se)
+			    confint[1, ] = pnorm(confint[1, ])
+		    }
+			else
+				confint = matrix(rep(NA, 2 * npar), ncol = 2)
 		}
 	}
     coef.table = cbind(object$coef, confint)
-	if (is.null(boot.sample))
+	if (is.null(object$boot.sample))
         colnames(coef.table) = c("Estimate", "Lower", "Upper")
 	else
 		colnames(coef.table) = c("Estimate", "Lower", "MCSE (Lower)", "Upper", "MCSE (Upper)")
     rownames(coef.table) = names(object$coef)
     cat("\nCoefficients:\n\n")
-    print(signif(coef.table, digits = 4))
-    cat("\nConvergence:\n\n")
-    if (object$convergence == 0)
-        print(paste("Optimization converged at ", signif(-object$value, digits = 4), sep = ""))
-	else
-        print("Optimization failed.")
+	print(signif(coef.table, digits = 4))
+	cat("\n")
 }
 
 #' Return the estimated covariance matrix for a \code{copCAR} model object.
@@ -1095,7 +1107,7 @@ vcov.copCAR = function(object, ...)
     if (! is.null(object$cov.hat))
         cov.hat = object$cov.hat
     else
-        cov.hat = cov(object$boot.sample)
+        cov.hat = cov(object$boot.sample, use = "complete.obs")
 	rownames(cov.hat) = colnames(cov.hat) = c("gamma", names(object$coef[-1]))
     cov.hat
 }

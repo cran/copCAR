@@ -1,4 +1,3 @@
-#include "buildM.h"
 #include <RcppArmadillo.h>
 #include <iostream>
 
@@ -35,11 +34,10 @@ arma::mat buildM_(const mat& B, int k, const colvec& eigval)
             temp[i] = pow(eigval[i], j + 1);
         M.col(j + 1) = B * temp;
     }
-
     return M;
 }
 
-RCPP_MODULE(buildM)
+RCPP_MODULE(copCARmod)
 {
     Rcpp::function("buildM_", &buildM_);
 }

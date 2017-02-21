@@ -9,12 +9,11 @@ negbinomial(theta = stop("'theta' must be specified."), link = "log")
 \arguments{
 \item{theta}{the dispersion parameter (must be positive).}
 
-\item{link}{the link function, as a character string, name, or one-element character vector, specifying one of \code{log}, \code{sqrt}, or \code{identity}, or an object of class "\code{\link[=family]{link-glm}}"}
+\item{link}{the link function, as a character string, name, or one-element character vector, specifying one of \code{log}, \code{sqrt}, or \code{identity}, or an object of class \dQuote{\code{\link[=family]{link-glm}}}}
 }
 \value{
-An object of class "\code{family}", a list of functions and expressions needed to fit a negative binomial GLM.
+An object of class \dQuote{\code{family}}, a list of functions and expressions needed to fit a negative binomial GLM.
 }
 \description{
 Provides the information required to apply copCAR with negative binomial marginal distributions.
 }
-

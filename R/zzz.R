@@ -1,6 +1,4 @@
 
-buildM = Module("buildM")
-
 .onAttach = function(libname, pkgname)
 {
     temp = packageDescription("copCAR")

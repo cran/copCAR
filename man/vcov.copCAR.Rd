@@ -23,4 +23,3 @@ Unless \code{\link{copCAR}} was called with \code{confint = "none"}, this functi
 \references{
 Hughes, J. (2015) copCAR: A flexible regression model for areal data.  \emph{Journal of Computational and Graphical Statistics}, \bold{24}(3), 733--755.
 }
-

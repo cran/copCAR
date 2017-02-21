@@ -23,4 +23,3 @@ Extract model residuals.
 \seealso{
 \code{\link{copCAR}}, \code{\link{residuals.glm}}
 }
-

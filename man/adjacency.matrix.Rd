@@ -20,4 +20,3 @@ Return an adjacency matrix for a square lattice.
 \details{
 This function builds the adjacency matrix for the \code{m} by \code{n} square lattice.
 }
-

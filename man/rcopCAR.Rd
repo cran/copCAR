@@ -13,7 +13,7 @@ rcopCAR(rho, beta, X, A, family)
 
 \item{X}{the \eqn{n} by \eqn{p} design matrix \eqn{X}.}
 
-\item{A}{the symmetric binary adjacency matrix for the underlying graph. \code{\link{adjacency.matrix}} generates the adjacency matrix for the \eqn{m} by \eqn{n} square lattice.}
+\item{A}{the symmetric binary adjacency matrix for the underlying graph.}
 
 \item{family}{the marginal distribution of the observations and link function to be used in the model. This can be a character string naming a family function, a family function, or the result of a call to a family function. (See \code{\link{family}} for details of family functions.) Supported familes are \code{binomial}, \code{poisson}, and \code{negbinomial}.}
 }
@@ -61,4 +61,3 @@ theta = 10
 
 Z = rcopCAR(rho, beta, X, A, family = negbinomial(theta))
 }
-
