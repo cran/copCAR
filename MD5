@@ -1,11 +1,11 @@
-c58a445c03cc653750fa7a1c3930aede *DESCRIPTION
+d10f2bc7296fddb25c36a2eff88faf37 *DESCRIPTION
 d0ad0f3826d9c4bc4cccf160b8cc1545 *NAMESPACE
 0cffd32bace68e9a3de46ed22f4ddc6d *R/RcppExports.R
-95490e6b0bf680484685ca2bd3f99c6e *R/copCAR.R
+4f4198d31360a3063ea0cb0290987161 *R/copCAR.R
 e99b1402c2027a56efe15ebe97f5a7cc *R/zzz.R
 985f71c2d956a256c8b325bad45f1754 *inst/CITATION
 89a3c53e6fc3b7f588c3bf8d06db38ad *man/adjacency.matrix.Rd
-262b89b597262825b9f5dd5e8f7b1d33 *man/copCAR.Rd
+f482fa9dca9d51c032449860b440061c *man/copCAR.Rd
 4f5a8e5aa9eaa3b9fcdc1c409bf181b0 *man/negbinomial.Rd
 5bf3beab15fa91bc3bfc4adba403bb1c *man/rcopCAR.Rd
 198a2cccc42f91c741adfc2f4c77cbbc *man/residuals.copCAR.Rd

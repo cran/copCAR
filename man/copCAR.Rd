@@ -11,7 +11,7 @@ copCAR(formula, family, data, offset, A, method = c("CML", "DT", "CE"),
 \arguments{
 \item{formula}{an object of class \dQuote{\code{\link{formula}}} (or one that can be coerced to that class): a symbolic description of the model to be fitted. The details of the model specification are given under "Details".}
 
-\item{family}{the marginal distribution of the observations at the areal units and link function to be used in the model. This can be a character string naming a family function, a family function or the result of a call to a family function. (See \code{\link{family}} for details of family functions.) Supported families are \code{binomial}, \code{negbinomial}, and \code{poisson}.}
+\item{family}{the marginal distribution of the observations at the areal units and link function to be used in the model. This can be a character string naming a family function, a family function or the result of a call to a family function. (See \code{\link{family}} for details of family functions.) Supported families are \code{binomial}, \code{negbinomial}, and \code{poisson}. When the negative binomial family is used, an initial value for \eqn{\theta} must be passed to the \code{negbinomial} family function.}
 
 \item{data}{an optional data frame, list or environment (or object coercible by \code{\link{as.data.frame}} to a data frame) containing the variables in the model. If not found in data, the variables are taken from \code{environment(formula)}, typically the environment from which \code{copCAR} is called.}
 
@@ -115,15 +115,16 @@ X = cbind(x, y)
 
 rho = 0.995      # strong dependence
 beta = c(1, 1)   # the mean surface increases in the direction of (1, 1)
+theta = 2        # dispersion parameter
 
-# Simulate Poisson data from the model.
+# Simulate negative binomial data from the model.
 
-z = rcopCAR(rho, beta, X, A, family = poisson(link = "log"))
+z = rcopCAR(rho, beta, X, A, family = negbinomial(theta))
 
 # Fit the copCAR model using the continous extension, and compute 95\% (default)
-# asymptotic confidence intervals for rho and beta. Use m equal to 100.
+# asymptotic confidence intervals. Give theta the initial value of 1. Use m equal to 100.
 
-fit.ce = copCAR(z ~ X - 1, A, family = poisson, method = "CE", confint = "asymptotic",
+fit.ce = copCAR(z ~ X - 1, A = A, family = negbinomial(1), method = "CE", confint = "asymptotic",
                 control = list(m = 100))
 summary(fit.ce)
 
@@ -131,14 +132,14 @@ summary(fit.ce)
 # intervals. Bootstrap the intervals, based on a bootstrap sample of size 100.
 # Do the bootstrap in parallel, using ten nodes.
 
-fit.dt = copCAR(z ~ X - 1, A, family = poisson, method = "DT", confint = "bootstrap",
+fit.dt = copCAR(z ~ X - 1, A = A, family = negbinomial(1), method = "DT", confint = "bootstrap",
                 control = list(bootit = 100, nodes = 10))
 summary(fit.dt, alpha = 0.9)
 
 # Fit the copCAR model using the composite marginal likelihood approach.
 # Do not compute confidence intervals.
 
-fit.cml = copCAR(z ~ X - 1, A, family = poisson, method = "CML", confint = "none")
+fit.cml = copCAR(z ~ X - 1, A = A, family = negbinomial(1), method = "CML", confint = "none")
 summary(fit.cml)
 }
 }
