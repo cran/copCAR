@@ -181,7 +181,7 @@ negbinomial = function(theta = stop("'theta' must be specified."), link = "log")
 #'
 #' # Simulate Bernoulli outcomes.
 #'
-#' Z = rcopCAR(rho, beta, X, A, family = binomial(link = "logit"))
+#' z = rcopCAR(rho, beta, X, A, family = binomial(link = "logit"))
 #'
 #' # Set the dispersion parameter.
 #'
@@ -189,7 +189,7 @@ negbinomial = function(theta = stop("'theta' must be specified."), link = "log")
 #'
 #' # Simulate negative binomial outcomes.
 #'
-#' Z = rcopCAR(rho, beta, X, A, family = negbinomial(theta))
+#' z = rcopCAR(rho, beta, X, A, family = negbinomial(theta))
 
 rcopCAR = function(rho, beta, X, A, family)
 {
@@ -203,7 +203,7 @@ rcopCAR = function(rho, beta, X, A, family)
         stop("'family' not recognized.")
     if (! family$family %in% c("binomial", "poisson", "negbinomial"))
         stop("'family' must be binomial, poisson, or negbinomial.")
-    if (missing(A) || ! is.matrix(A) || ! isSymmetric(A) || ! (A == 0 || A == 1))
+    if (missing(A) || ! is.matrix(A) || ! isSymmetric(A) || ! all(A == 0 | A == 1))
         stop("You must supply a symmetric binary adjacency matrix.")
     diag(A) = 0
     if (missing(X) || ! is.matrix(X) || ! is.numeric(X))
@@ -326,7 +326,7 @@ lik.DT = function(params, Z, X, A, D, d, C, M, offset, family)
     v = as.vector(M %*% rho^(0:k) / d)
     Q = as.spam(D - rho * A)
     C = try(update.spam.chol.NgPeyton(C, Q), silent = TRUE)
-    if (class(C) == "try-error")
+    if (any(class(C) == "try-error"))
         return(1e6)
     linkinv = family$linkinv
     eta = offset + X %*% beta
@@ -337,7 +337,7 @@ lik.DT = function(params, Z, X, A, D, d, C, M, offset, family)
         U = (pnbinom(Z, mu = mu, size = theta) + pnbinom(Z - 1, mu = mu, size = theta)) / 2
     Y = qnorm(U, 0, sqrt(v))
     qform =  try(t(Y) %*% Q  %*% Y, silent = TRUE)
-    if (class(qform) == "try-error")
+    if (any(class(qform) == "try-error"))
         return(1e6)
     if (family$family == "poisson")
         loglik = -sum(log(diag(C))) + 0.5 * (qform - sum(Y^2 / v) - sum(log(v))) - sum(dpois(Z, mu, log = TRUE))
@@ -359,7 +359,7 @@ lik.CE = function(params, Z, X, A, D, d, C, M, U, offset, family)
     v = as.vector(M %*% rho^(0:k) / d)
     Q = as.spam(D - rho * A)
     C = try(update.spam.chol.NgPeyton(C, Q), silent = TRUE)
-    if (class(C) == "try-error")
+    if (any(class(C) == "try-error"))
         return(1e6)
     linkinv = family$linkinv
     eta = offset + X %*% beta
@@ -375,7 +375,7 @@ lik.CE = function(params, Z, X, A, D, d, C, M, U, offset, family)
             u_ = pnbinom.CE(z_, mu, theta)
         y_ = qnorm(u_, 0, sqrt(v))
         qform = try(t(y_) %*% Q %*% y_, silent = TRUE)
-        if (class(qform) == "try-error")
+        if (any(class(qform) == "try-error"))
             return(1e6)
         w[j] = -0.5 * (qform - sum(y_^2 / v))
     }
@@ -403,7 +403,7 @@ lik.CML = function(params, Z, X, A, D, C, offset, family, N, K)
     mu = linkinv(eta)
     Q = as.spam(D - rho * A)
     C = try(update.spam.chol.NgPeyton(C, Q), silent = TRUE)
-    if (class(C) == "try-error")
+    if (any(class(C) == "try-error"))
         return(1e6)
     R = chol2inv.spam(C)
     v = diag(R)
@@ -764,7 +764,7 @@ copCAR.control = function(method, confint, control, verbose)
 #'
 #'
 #' @param formula an object of class \dQuote{\code{\link{formula}}} (or one that can be coerced to that class): a symbolic description of the model to be fitted. The details of the model specification are given under "Details".
-#' @param family the marginal distribution of the observations at the areal units and link function to be used in the model. This can be a character string naming a family function, a family function or the result of a call to a family function. (See \code{\link{family}} for details of family functions.) Supported families are \code{binomial}, \code{negbinomial}, and \code{poisson}. When the negative binomial family is used, an initial value for \eqn{\theta} must be passed to the \code{negbinomial} family function.
+#' @param family the marginal distribution of the observations at the areal units and link function to be used in the model. This can be a character string naming a family function, a family function or the result of a call to a family function. (See \code{\link{family}} for details of family functions.) Supported families are \code{binomial}, \code{negbinomial}, and \code{poisson}. When the negative binomial family is used, an initial value for \eqn{\theta} must be passed to the \code{\link{negbinomial}} family function.
 #' @param data an optional data frame, list or environment (or object coercible by \code{\link{as.data.frame}} to a data frame) containing the variables in the model. If not found in data, the variables are taken from \code{environment(formula)}, typically the environment from which \code{copCAR} is called.
 #' @param offset this can be used to specify an \emph{a priori} known component to be included in the linear predictor during fitting. This should be \code{NULL} or a numeric vector of length equal to the number of observations. One or more \code{\link{offset}} terms can be included in the formula instead or as well, and if more than one is specified their sum is used. See \code{\link{model.offset}}.
 #' @param A the symmetric binary adjacency matrix for the underlying graph.
@@ -846,7 +846,7 @@ copCAR.control = function(method, confint, control, verbose)
 #' y = rep(0:(m - 1) / (m - 1), each = m)
 #' X = cbind(x, y)
 #'
-#' # Set the dependence parameter and regression coefficients.
+#' # Set the dependence parameter, regression coefficients, and dispersion parameter.
 #'
 #' rho = 0.995      # strong dependence
 #' beta = c(1, 1)   # the mean surface increases in the direction of (1, 1)
@@ -884,7 +884,7 @@ copCAR = function(formula, family, data, offset, A, method = c("CML", "DT", "CE"
     call = match.call()
     if (missing(formula))
         stop("You must supply a formula.")
-    if (missing(A) || ! is.matrix(A) || ! isSymmetric(A) || ! (A == 0 || A == 1))
+    if (missing(A) || ! is.matrix(A) || ! isSymmetric(A) || ! all(A == 0 | A == 1))
         stop("You must supply a symmetric binary adjacency matrix.")
 	diag(A) = 0
     if (is.character(family))
@@ -961,7 +961,7 @@ copCAR = function(formula, family, data, offset, A, method = c("CML", "DT", "CE"
 		else
 		{
 			cov.hat = try(solve(fit$hessian), silent = TRUE)
-			if (class(cov.hat) == "try-error")
+			if (any(class(cov.hat) == "try-error"))
 				result$cov.hat = NULL
 			else if (method == "CE")
 			    result$cov.hat = cov.hat

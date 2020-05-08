@@ -51,7 +51,7 @@ z = rcopCAR(rho, beta, X, A, family = poisson(link = "log"))
 
 # Simulate Bernoulli outcomes.
 
-Z = rcopCAR(rho, beta, X, A, family = binomial(link = "logit"))
+z = rcopCAR(rho, beta, X, A, family = binomial(link = "logit"))
 
 # Set the dispersion parameter.
 
@@ -59,5 +59,5 @@ theta = 10
 
 # Simulate negative binomial outcomes.
 
-Z = rcopCAR(rho, beta, X, A, family = negbinomial(theta))
+z = rcopCAR(rho, beta, X, A, family = negbinomial(theta))
 }

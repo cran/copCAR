@@ -11,7 +11,7 @@ copCAR(formula, family, data, offset, A, method = c("CML", "DT", "CE"),
 \arguments{
 \item{formula}{an object of class \dQuote{\code{\link{formula}}} (or one that can be coerced to that class): a symbolic description of the model to be fitted. The details of the model specification are given under "Details".}
 
-\item{family}{the marginal distribution of the observations at the areal units and link function to be used in the model. This can be a character string naming a family function, a family function or the result of a call to a family function. (See \code{\link{family}} for details of family functions.) Supported families are \code{binomial}, \code{negbinomial}, and \code{poisson}. When the negative binomial family is used, an initial value for \eqn{\theta} must be passed to the \code{negbinomial} family function.}
+\item{family}{the marginal distribution of the observations at the areal units and link function to be used in the model. This can be a character string naming a family function, a family function or the result of a call to a family function. (See \code{\link{family}} for details of family functions.) Supported families are \code{binomial}, \code{negbinomial}, and \code{poisson}. When the negative binomial family is used, an initial value for \eqn{\theta} must be passed to the \code{\link{negbinomial}} family function.}
 
 \item{data}{an optional data frame, list or environment (or object coercible by \code{\link{as.data.frame}} to a data frame) containing the variables in the model. If not found in data, the variables are taken from \code{environment(formula)}, typically the environment from which \code{copCAR} is called.}
 
@@ -111,7 +111,7 @@ x = rep(0:(m - 1) / (m - 1), times = m)
 y = rep(0:(m - 1) / (m - 1), each = m)
 X = cbind(x, y)
 
-# Set the dependence parameter and regression coefficients.
+# Set the dependence parameter, regression coefficients, and dispersion parameter.
 
 rho = 0.995      # strong dependence
 beta = c(1, 1)   # the mean surface increases in the direction of (1, 1)
