@@ -69,8 +69,8 @@ build.M = function(A, d, rho.max, epsilon)
 
 neighbor.list = function(A) 
 {
-	n = nrow(A)
-	N = vector("list", n)
+    n = nrow(A)
+    N = vector("list", n)
     for (i in 1:n)
     {
         temp = which(as.logical(A[i, ]))
@@ -227,7 +227,7 @@ simulate.copCAR = function(rho, beta, X, A, family)
     d = rowSums(A)
     D = diag(d, length(d))
     Q = D - rho * A
-	C = chol(as.spam(Q))
+    C = chol(as.spam(Q))
     R = chol2inv.spam(C)
     rootR = t(chol(R))
     Y = rootR %*% rnorm(length(d))
@@ -262,7 +262,7 @@ copCAR.DT = function(Z, X, A, rho.max, epsilon, offset, family, maxit)
         upper = c(upper, Inf)
     }
     fit = optim(init, lik.DT, Z = Z, X = X, A = A, D = D, d = d, C = C, M = M, offset = offset, family = family,
-		        method = "L-BFGS-B", lower = lower, upper = upper, hessian = TRUE, control = list(maxit = maxit))
+                method = "L-BFGS-B", lower = lower, upper = upper, hessian = TRUE, control = list(maxit = maxit))
     fit
 }
 
@@ -284,7 +284,7 @@ copCAR.CE = function(Z, X, A, rho.max, epsilon, offset, family, m, maxit)
         upper = c(upper, Inf)
     }
     fit = optim(init, lik.CE, Z = Z, X = X, A = A, D = D, d = d, C = C, M = M, U = U, offset = offset, family = family,
-		        method = "L-BFGS-B", lower = lower, upper = upper, hessian = TRUE, control = list(maxit = maxit))
+                method = "L-BFGS-B", lower = lower, upper = upper, hessian = TRUE, control = list(maxit = maxit))
     fit
 }
 
@@ -307,9 +307,12 @@ copCAR.CML = function(Z, X, A, offset, family, maxit)
         lower = c(lower, 1e-6)
         upper = c(upper, Inf)
     }
-	K = matrix(NA, 4, 2)
+    K = matrix(NA, 4, 2)
     fit = optim(init, lik.CML, Z = Z, X = X, A = A, D = D, C = C, offset = offset, family = family, N = N, K = K,
-		        method = "L-BFGS-B", lower = lower, upper = upper, hessian = TRUE, control = list(maxit = maxit))
+                method = "L-BFGS-B", lower = lower, upper = upper, hessian = TRUE, control = list(maxit = maxit))
+    if (fit$convergence != 0)
+        fit = optim(init, lik.CML, Z = Z, X = X, A = A, D = D, C = C, offset = offset, family = family, N = N, K = K,
+                    method = "Nelder-Mead", hessian = TRUE, control = list(maxit = maxit))
     fit
 }
 
@@ -427,19 +430,19 @@ lik.CML = function(params, Z, X, A, D, C, offset, family, N, K)
     Y.0 = ifelse(Y.0 == Inf, 1e6, Y.0)
     Y.1 = ifelse(Y.1 == Inf, 1e6, Y.1)
     loglik = 0
-	u = c(1, -1, -1, 1)
+    u = c(1, -1, -1, 1)
     for (i in 1:nrow(A))
     {
-		for (j in N[[i]])
-		{
+        for (j in N[[i]])
+        {
             corr = R[i, j] / sqrt(v[i] * v[j])
-	    	K[, 1] = c(Y.0[i], Y.0[i], Y.1[i], Y.1[i])
-	    	K[, 2] = c(Y.0[j], Y.1[j], Y.0[j], Y.1[j])
+            K[, 1] = c(Y.0[i], Y.0[i], Y.1[i], Y.1[i])
+            K[, 2] = c(Y.0[j], Y.1[j], Y.0[j], Y.1[j])
             s = pbivnormf(K, rho = corr)
-    	    s = t(s) %*% u
-    	    if (s != 0)
-    	        loglik = loglik + log(s)
-	    }
+            s = t(s) %*% u
+            if (! is.na(s) && s > 0)
+                loglik = loglik + log(s)
+        }
     }
     -loglik
 }
@@ -480,9 +483,9 @@ pbivnormf = function (K, rho = 0)
 
 copCAR.bootstrap.helper = function(dummy, mu, theta, v, family, rootR, method, control, X, A, offset)
 {
-	n = length(mu)
-	Y = rootR %*% rnorm(n)
-	U = pnorm(Y, sd = sqrt(v))
+    n = length(mu)
+    Y = rootR %*% rnorm(n)
+    U = pnorm(Y, sd = sqrt(v))
     if (family$family == "binomial")
         Z = qbinom(U, 1, mu)
     else if (family$family == "poisson")
@@ -495,7 +498,7 @@ copCAR.bootstrap.helper = function(dummy, mu, theta, v, family, rootR, method, c
         fit = copCAR.DT(Z = Z, X = X, A = A, rho.max = control$rho.max, epsilon = control$epsilon, offset = offset, family = family, maxit = control$maxit)
     else
         fit = copCAR.CML(Z = Z, X = X, A = A, offset = offset, family = family, maxit = control$maxit)
-	fit
+    fit
 }
 
 copCAR.bootstrap = function(params, X, A, offset, family, method, control, verbose)
@@ -507,29 +510,29 @@ copCAR.bootstrap = function(params, X, A, offset, family, method, control, verbo
         theta = beta[length(beta)]
         beta = beta[-length(beta)]
     }
-	else
-		theta = NULL
+    else
+        theta = NULL
     linkinv = family$linkinv
     eta = offset + X %*% beta
     mu = linkinv(eta)
     d = rowSums(A)
     D = diag(d, length(d))
     Q = D - rho * A
-	C = chol(as.spam(Q))
-	R = chol2inv.spam(C)
+    C = chol(as.spam(Q))
+    R = chol2inv.spam(C)
     rootR = t(chol(R))
     v = diag(R)
     boot.sample = data.frame(matrix(, control$bootit, length(params)))
     if (! control$parallel)
     {
-		if (verbose && requireNamespace("pbapply", quietly = TRUE))
-		{
-			cat("\n")
-			gathered = pbapply::pblapply(1:control$bootit, copCAR.bootstrap.helper, mu, theta, v, family, rootR, method, control, X, A, offset)
-		}
-		else
-		{
-			gathered = vector("list", control$bootit)
+        if (verbose && requireNamespace("pbapply", quietly = TRUE))
+        {
+            cat("\n")
+            gathered = pbapply::pblapply(1:control$bootit, copCAR.bootstrap.helper, mu, theta, v, family, rootR, method, control, X, A, offset)
+        }
+        else
+        {
+            gathered = vector("list", control$bootit)
             for (j in 1:control$bootit)
                 gathered[[j]] = copCAR.bootstrap.helper(NULL, mu, theta, v, family, rootR, method, control, X, A, offset)
         }
@@ -539,11 +542,11 @@ copCAR.bootstrap = function(params, X, A, offset, family, method, control, verbo
         cl = parallel::makeCluster(control$nodes, control$type)
         parallel::clusterEvalQ(cl, library(copCAR))
         if (verbose && requireNamespace("pbapply", quietly = TRUE))
-		{
-		    cat("\n")
-			gathered = pbapply::pblapply(1:control$bootit, copCAR.bootstrap.helper, mu, theta, v, family, rootR, method, control, X, A, offset, cl = cl)
-		}
-		else
+        {
+            cat("\n")
+            gathered = pbapply::pblapply(1:control$bootit, copCAR.bootstrap.helper, mu, theta, v, family, rootR, method, control, X, A, offset, cl = cl)
+        }
+        else
             gathered = parallel::clusterApplyLB(cl, 1:control$bootit, copCAR.bootstrap.helper, mu, theta, v, family, rootR, method, control, X, A, offset)
         parallel::stopCluster(cl)      
     }
@@ -556,15 +559,15 @@ copCAR.bootstrap = function(params, X, A, offset, family, method, control, verbo
         else
             temp = fit$par
         boot.sample[j, ] = temp
-	}
+    }
     boot.sample
 }
 
 copCAR.sandwich.helper = function(dummy, params, mu, theta, M, v, family, C, D, d, N, rootR, method, control, X, A, offset)
 {
-	n = length(mu)
-	Y = rootR %*% rnorm(n)
-	U = pnorm(Y, sd = sqrt(v))
+    n = length(mu)
+    Y = rootR %*% rnorm(n)
+    U = pnorm(Y, sd = sqrt(v))
     if (family$family == "binomial")
         Z = qbinom(U, 1, mu)
     else if (family$family == "poisson")
@@ -572,13 +575,13 @@ copCAR.sandwich.helper = function(dummy, params, mu, theta, M, v, family, C, D, 
     else
         Z = qnbinom(U, size = theta, mu = mu)
     if (method == "CML")
-	{
-		K = matrix(NA, 4, 2)
+    {
+        K = matrix(NA, 4, 2)
         gr = - grad(lik.CML, params, Z = Z, X = X, A = A, D = D, C = C, offset = offset, family = family, N = N, K = K)
-	}
+    }
     else
         gr = - grad(lik.DT, params, Z = Z, X = X, A = A, D = D, d = d, C = C, M = M, offset = offset, family = family)
-	gr
+    gr
 }
 
 copCAR.asymptotic = function(params, X, A, offset, family, method, bread, control, verbose)
@@ -590,34 +593,34 @@ copCAR.asymptotic = function(params, X, A, offset, family, method, bread, contro
         theta = beta[length(beta)]
         beta = beta[-length(beta)]
     }
-	else
-		theta = NULL
+    else
+        theta = NULL
     linkinv = family$linkinv
     eta = offset + X %*% beta
     mu = linkinv(eta)
     d = rowSums(A)
     D = diag(d, length(d))
     Q = D - rho * A
-	C = chol(as.spam(Q))
-	R = chol2inv.spam(C)
+    C = chol(as.spam(Q))
+    R = chol2inv.spam(C)
     rootR = t(chol(R))
     v = diag(R)
-	M = NULL
-	if (method == "DT")
-		M = build.M(A, d, control$rho.max, control$epsilon)
-	N = NULL
-	if (method == "CML")
-		N = neighbor.list(A)
+    M = NULL
+    if (method == "DT")
+        M = build.M(A, d, control$rho.max, control$epsilon)
+    N = NULL
+    if (method == "CML")
+        N = neighbor.list(A)
     if (! control$parallel)
     {
-		if (verbose && requireNamespace("pbapply", quietly = TRUE))
-		{
-			cat("\n")
-			gathered = pbapply::pblapply(1:control$bootit, copCAR.sandwich.helper, params, mu, theta, M, v, family, C, D, d, N, rootR, method, control, X, A, offset)
-		}
-		else
-		{
-			gathered = vector("list", control$bootit)
+        if (verbose && requireNamespace("pbapply", quietly = TRUE))
+        {
+            cat("\n")
+            gathered = pbapply::pblapply(1:control$bootit, copCAR.sandwich.helper, params, mu, theta, M, v, family, C, D, d, N, rootR, method, control, X, A, offset)
+        }
+        else
+        {
+            gathered = vector("list", control$bootit)
             for (j in 1:control$bootit)
                 gathered[[j]] = copCAR.sandwich.helper(NULL, params, mu, theta, M, v, family, C, D, d, N, rootR, method, control, X, A, offset)
         }
@@ -627,70 +630,70 @@ copCAR.asymptotic = function(params, X, A, offset, family, method, bread, contro
         cl = parallel::makeCluster(control$nodes, control$type)
         parallel::clusterEvalQ(cl, library(copCAR))
         if (verbose && requireNamespace("pbapply", quietly = TRUE))
-		{
-		    cat("\n")
-			gathered = pbapply::pblapply(1:control$bootit, copCAR.sandwich.helper, params, mu, theta, M, v, family, C, D, d, N, rootR, method, control, X, A, offset, cl = cl)
-		}
-		else
+        {
+            cat("\n")
+            gathered = pbapply::pblapply(1:control$bootit, copCAR.sandwich.helper, params, mu, theta, M, v, family, C, D, d, N, rootR, method, control, X, A, offset, cl = cl)
+        }
+        else
             gathered = parallel::clusterApplyLB(cl, 1:control$bootit, copCAR.sandwich.helper, params, mu, theta, M, v, family, C, D, d, N, rootR, method, control, X, A, offset)
         parallel::stopCluster(cl)      
     }
-	meat = matrix(0, length(params), length(params))
+    meat = matrix(0, length(params), length(params))
     for (j in 1:control$bootit)
     {
-		gr = gathered[[j]]
+        gr = gathered[[j]]
         meat = meat + gr %o% gr / control$bootit
-	}   
+    }   
     cov.hat = bread %*% meat %*% bread
-	cov.hat
+    cov.hat
 }
 
 copCAR.control = function(method, confint, control, verbose)
 {
-	nms = match.arg(names(control), c("maxit", "epsilon", "rho.max", "m", "bootit", "parallel", "type", "nodes"), several.ok = TRUE)
-	control = control[nms]
-	maxit = control$maxit
+    nms = match.arg(names(control), c("maxit", "epsilon", "rho.max", "m", "bootit", "parallel", "type", "nodes"), several.ok = TRUE)
+    control = control[nms]
+    maxit = control$maxit
     if (is.null(maxit) || ! is.numeric(maxit) || length(maxit) > 1 || maxit != as.integer(maxit) || maxit < 100)
     {
         if (verbose)
             cat("\nControl parameter 'maxit' must be a positive integer >= 100. Setting it to the default value of 1,000.\n")
         control$maxit = 1000
     }
-	if (method != "CML")
-	{
-		epsilon = control$epsilon
+    if (method != "CML")
+    {
+        epsilon = control$epsilon
         if (is.null(epsilon) || ! is.numeric(epsilon) || length(epsilon) > 1 || epsilon <= 0 || epsilon > 0.1)
         {
             if (verbose)
                 cat("\nControl parameter 'epsilon' must be a small positive number. Setting it to the default value of 0.01.\n")
             control$epsilon = 0.01
         }
-		rho.max = control$rho.max
+        rho.max = control$rho.max
         if (is.null(rho.max) || ! is.numeric(rho.max) || length(rho.max) > 1 || rho.max <= 0 || rho.max >= 1)
         {
             if (verbose)
                 cat("\nControl parameter 'rho.max' must be from (0, 1), and should be close to 1. Setting it to the default value of 0.999.\n")
             control$rho.max = 0.999
         }
-	}
-	else
-		control$epsilon = control$rho.max = NULL
-	if (method == "CE")
-	{
-		m = control$m
+    }
+    else
+        control$epsilon = control$rho.max = NULL
+    if (method == "CE")
+    {
+        m = control$m
         if (is.null(m) || ! is.numeric(m) || length(m) > 1 || m != as.integer(m) || m < 10)
         {
             if (verbose)
                 cat("\nControl parameter 'm' must be a positive integer >= 10. Setting it to the default value of 1,000.\n")
             control$m = 1000
         }
-	}
-	else
-		control$m = NULL
-	if (confint != "none")
-	{
-		if (confint == "bootstrap" || (confint == "asymptotic" && method != "CE"))
-		{
+    }
+    else
+        control$m = NULL
+    if (confint != "none")
+    {
+        if (confint == "bootstrap" || (confint == "asymptotic" && method != "CE"))
+        {
             bootit = control$bootit
             if (is.null(bootit) || ! is.numeric(bootit) || length(bootit) > 1 || bootit != as.integer(bootit) || bootit < 100)
             {
@@ -723,15 +726,15 @@ copCAR.control = function(method, confint, control, verbose)
                     if (verbose)
                         cat("\nParallel computation requires package parallel. Setting control parameter 'parallel' to FALSE.\n")
                     control$parallel = FALSE
-				    control$type = control$nodes = NULL 
+                    control$type = control$nodes = NULL 
                 }
             }
-	    }
-		else
-			control$bootit = control$parallel = control$type = control$nodes = NULL
+        }
+        else
+            control$bootit = control$parallel = control$type = control$nodes = NULL
     }
-	else
-		control$bootit = control$parallel = control$type = control$nodes = NULL
+    else
+        control$bootit = control$parallel = control$type = control$nodes = NULL
     control
 }
 
@@ -886,7 +889,7 @@ copCAR = function(formula, family, data, offset, A, method = c("CML", "DT", "CE"
         stop("You must supply a formula.")
     if (missing(A) || ! is.matrix(A) || ! isSymmetric(A) || ! all(A == 0 | A == 1))
         stop("You must supply a symmetric binary adjacency matrix.")
-	diag(A) = 0
+    diag(A) = 0
     if (is.character(family))
         family = get(family, mode = "function", envir = parent.frame())
     if (is.function(family))
@@ -904,14 +907,14 @@ copCAR = function(formula, family, data, offset, A, method = c("CML", "DT", "CE"
     mf = eval(mf, parent.frame())
     mt = attr(mf, "terms")
     Z = model.response(mf, "numeric")
-	if (! is.vector(Z))
-		stop("The response must be a vector.")
+    if (! is.vector(Z))
+        stop("The response must be a vector.")
     if (family$family == "binomial" && ! (Z == 0 || Z == 1))
         stop("The response must be binary if 'family' is binomial.")
-	if (family$family == "binomial" && method != "CML")
-	    stop("Only the CML method is appropriate for binary outcomes.")
-	if (family$family %in% c("poisson", "negbinomial") && ! all(Z >= 0 & (Z == as.integer(Z))))
-		stop("The outcomes must be non-negative integers if 'family' is poisson or negbinomial.")
+    if (family$family == "binomial" && method != "CML")
+        stop("Only the CML method is appropriate for binary outcomes.")
+    if (family$family %in% c("poisson", "negbinomial") && ! all(Z >= 0 & (Z == as.integer(Z))))
+        stop("The outcomes must be non-negative integers if 'family' is poisson or negbinomial.")
     X = model.matrix(mt, mf)
     offset = as.vector(model.offset(mf))
     if (! is.null(offset) && length(offset) != length(Z))
@@ -921,7 +924,7 @@ copCAR = function(formula, family, data, offset, A, method = c("CML", "DT", "CE"
     if (sum(c(nrow(X), nrow(A)) != length(Z)) > 0)
         stop("The supplied response vector/design matrix/adjacency matrix are not conformable.")
     method = match.arg(method)
-	confint = match.arg(confint)
+    confint = match.arg(confint)
     if (! is.logical(verbose) || length(verbose) > 1)
         stop("'verbose' must be a logical value.")
     if (! is.list(control))
@@ -940,7 +943,7 @@ copCAR = function(formula, family, data, offset, A, method = c("CML", "DT", "CE"
         warning("Optimization failed.")
         result$convergence = fit$convergence
         result$message = fit$message
-		result$call = call
+        result$call = call
         return(result)
     }
     npar = length(fit$par)
@@ -950,35 +953,35 @@ copCAR = function(formula, family, data, offset, A, method = c("CML", "DT", "CE"
         beta.hat = beta.hat[-length(beta.hat)]
     eta = X %*% beta.hat
     mu = linkinv(eta)
-	if (confint != "none")
-	{
-		if (confint == "bootstrap")
-		{
-			boot.sample = copCAR.bootstrap(fit$par, X, A, offset, family, method, control, verbose)
-			colnames(boot.sample) = c("gamma", names(fit$par[-1]))
-		    result$boot.sample = boot.sample
-		}
-		else
-		{
-			cov.hat = try(solve(fit$hessian), silent = TRUE)
-			if (any(class(cov.hat) == "try-error"))
-				result$cov.hat = NULL
-			else if (method == "CE")
-			    result$cov.hat = cov.hat
-			else
-			{
-				cov.hat = copCAR.asymptotic(fit$par, X, A, offset, family, method, cov.hat, control, verbose)
-				result$cov.hat = cov.hat
-			}
-		}
-	}
-	result$npar = npar
+    if (confint != "none")
+    {
+        if (confint == "bootstrap")
+        {
+            boot.sample = copCAR.bootstrap(fit$par, X, A, offset, family, method, control, verbose)
+            colnames(boot.sample) = c("gamma", names(fit$par[-1]))
+            result$boot.sample = boot.sample
+        }
+        else
+        {
+            cov.hat = try(solve(fit$hessian), silent = TRUE)
+            if (any(class(cov.hat) == "try-error"))
+                result$cov.hat = NULL
+            else if (method == "CE")
+                result$cov.hat = cov.hat
+            else
+            {
+                cov.hat = copCAR.asymptotic(fit$par, X, A, offset, family, method, cov.hat, control, verbose)
+                result$cov.hat = cov.hat
+            }
+        }
+    }
+    result$npar = npar
     result$linear.predictors = eta
     result$fitted.values = mu
-	result$residuals = Z - mu
+    result$residuals = Z - mu
     result$coefficients = c(pnorm(fit$par[1]), fit$par[-1])
     result$confint = confint
-	result$family = family
+    result$family = family
     if (model)
         result$model = mf
     if (x)
@@ -994,8 +997,8 @@ copCAR = function(formula, family, data, offset, A, method = c("CML", "DT", "CE"
     result$call = call
     result$terms = mt
     result$formula = formula
-	result$offset = offset
-	result$control = control
+    result$offset = offset
+    result$control = control
     temp = c("rho", colnames(X))
     if (family$family == "negbinomial")
         temp = c(temp, "theta")
@@ -1026,15 +1029,15 @@ copCAR = function(formula, family, data, offset, A, method = c("CML", "DT", "CE"
 summary.copCAR = function(object, alpha = 0.05, digits = 4, ...)
 {
     cat("\nCall:\n\n")
-	print(object$call)
+    print(object$call)
     cat("\nConvergence:\n")
     if (object$convergence != 0)
     {
-    	cat("\nOptimization failed =>", object$message, "\n")
-		return(invisible())
+        cat("\nOptimization failed =>", object$message, "\n")
+        return(invisible())
     }
-	else
-		cat("\nOptimization converged at", signif(-object$value, digits = 4), "\n")
+    else
+        cat("\nOptimization converged at", signif(-object$value, digits = 4), "\n")
     cat("\nControl parameters:\n")
     if (length(object$control) > 0)
     {
@@ -1047,42 +1050,42 @@ summary.copCAR = function(object, alpha = 0.05, digits = 4, ...)
     npar = object$npar
     if (object$confint == "none")
         confint = matrix(rep(NA, 2 * npar), ncol = 2)
-	else
-	{
-	    boot.sample = object$boot.sample
-	    if (! is.null(boot.sample))
-	    {
-	        boot.sample[, 1] = pnorm(boot.sample[, 1])
-			boot.sample = boot.sample[complete.cases(boot.sample), ]
-	        lo = mcse.q.mat(boot.sample, alpha / 2)
-			hi = mcse.q.mat(boot.sample, 1 - alpha / 2)
-			confint = cbind(lo, hi)
-	    }
-		else
-		{
-			cov.hat = object$cov.hat
-			if (! is.null(cov.hat))
-			{
-			    se = sqrt(diag(cov.hat))
-			    scale = qnorm(1 - alpha / 2)
-			    coef = object$coef
-			    coef[1] = qnorm(coef[1])
-			    confint = cbind(coef - scale * se, coef + scale * se)
-			    confint[1, ] = pnorm(confint[1, ])
-		    }
-			else
-				confint = matrix(rep(NA, 2 * npar), ncol = 2)
-		}
-	}
+    else
+    {
+        boot.sample = object$boot.sample
+        if (! is.null(boot.sample))
+        {
+            boot.sample[, 1] = pnorm(boot.sample[, 1])
+            boot.sample = boot.sample[complete.cases(boot.sample), ]
+            lo = mcse.q.mat(boot.sample, alpha / 2)
+            hi = mcse.q.mat(boot.sample, 1 - alpha / 2)
+            confint = cbind(lo, hi)
+        }
+        else
+        {
+            cov.hat = object$cov.hat
+            if (! is.null(cov.hat))
+            {
+                se = sqrt(diag(cov.hat))
+                scale = qnorm(1 - alpha / 2)
+                coef = object$coef
+                coef[1] = qnorm(coef[1])
+                confint = cbind(coef - scale * se, coef + scale * se)
+                confint[1, ] = pnorm(confint[1, ])
+            }
+            else
+                confint = matrix(rep(NA, 2 * npar), ncol = 2)
+        }
+    }
     coef.table = cbind(object$coef, confint)
-	if (is.null(object$boot.sample))
+    if (is.null(object$boot.sample))
         colnames(coef.table) = c("Estimate", "Lower", "Upper")
-	else
-		colnames(coef.table) = c("Estimate", "Lower", "MCSE (Lower)", "Upper", "MCSE (Upper)")
+    else
+        colnames(coef.table) = c("Estimate", "Lower", "MCSE (Lower)", "Upper", "MCSE (Upper)")
     rownames(coef.table) = names(object$coef)
     cat("\nCoefficients:\n\n")
-	print(signif(coef.table, digits = 4))
-	cat("\n")
+    print(signif(coef.table, digits = 4))
+    cat("\n")
 }
 
 #' Return the estimated covariance matrix for a \code{copCAR} model object.
@@ -1109,7 +1112,7 @@ vcov.copCAR = function(object, ...)
         cov.hat = object$cov.hat
     else
         cov.hat = cov(object$boot.sample, use = "complete.obs")
-	rownames(cov.hat) = colnames(cov.hat) = c("gamma", names(object$coef[-1]))
+    rownames(cov.hat) = colnames(cov.hat) = c("gamma", names(object$coef[-1]))
     cov.hat
 }
 
@@ -1133,12 +1136,12 @@ residuals.copCAR = function(object, type = c("deviance", "pearson", "response"),
     y = object$y
     r = object$residuals
     mu = object$fitted.values
-	if (type == "response")
-		return(r)
-	else if (type == "pearson")
-		return(r / sqrt(object$family$variance(mu)))
-	else
-	{
+    if (type == "response")
+        return(r)
+    else if (type == "pearson")
+        return(r / sqrt(object$family$variance(mu)))
+    else
+    {
         if (is.null(y))
             y = mu + r
         return(sqrt(pmax((object$family$dev.resids)(y, mu, rep(1, length(y))), 0)))
